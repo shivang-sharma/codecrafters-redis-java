@@ -4,6 +4,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
   public static void main(String[] args){
@@ -19,9 +21,17 @@ public class Main {
         serverSocket.setReuseAddress(true);
         // Wait for connection from client.
         clientSocket = serverSocket.accept();
+        BufferedReader in  = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
-        writer.println("+PONG\r");
-        writer.flush();
+        String line;
+        while (true) {
+          line = in.readLine();
+          if (line == null) {
+            break;
+          }
+          writer.write("+PONG\r\n");
+          writer.flush();
+        }
       } catch (IOException e) {
         System.out.println("IOException: " + e.getMessage());
       } finally {
