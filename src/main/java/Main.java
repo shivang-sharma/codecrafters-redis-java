@@ -18,6 +18,8 @@ public class Main {
         clientSocket = serverSocket.accept();
         BufferedReader in  = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
+        writer.write("+PONG\r\n");
+        writer.flush();
         String line;
         while (true) {
           line = in.readLine();
