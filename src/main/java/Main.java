@@ -18,8 +18,8 @@ public class Main {
         clientSocket = serverSocket.accept();
         BufferedReader in  = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
-        writer.write("+PONG\r\n");
-        writer.flush();
+//        writer.write("+PONG\r\n");
+//        writer.flush();
         String line;
         while ((line = in.readLine()) != null) {
           if (line.equalsIgnoreCase("ping")) {
@@ -27,6 +27,7 @@ public class Main {
             writer.flush();
           }
         }
+        clientSocket.close();
       } catch (IOException e) {
         System.out.println("IOException: " + e.getMessage());
       } finally {
