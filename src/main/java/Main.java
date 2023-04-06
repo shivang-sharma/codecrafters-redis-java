@@ -21,13 +21,11 @@ public class Main {
         writer.write("+PONG\r\n");
         writer.flush();
         String line;
-        while (true) {
-          line = in.readLine();
-          if (line == null) {
-            break;
+        while ((line = in.readLine()) != null) {
+          if (line.equalsIgnoreCase("ping")) {
+            writer.write("+PONG\r\n");
+            writer.flush();
           }
-          writer.write("+PONG\r\n");
-          writer.flush();
         }
       } catch (IOException e) {
         System.out.println("IOException: " + e.getMessage());
