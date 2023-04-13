@@ -29,11 +29,11 @@ public class ConnectionHandler implements IConnectionHandler {
             ICommand command = IRespProtocol.decode(request);
             this.connection.out().write(command.generateResponse());
             this.connection.out().flush();
-            this.connection.close();
+//            this.connection.close();
         } catch (IOException e) {
              e.printStackTrace();
         } finally {
-            this.connection.close();
+//            this.connection.close();
         }
     }
 }
