@@ -1,7 +1,5 @@
-package eventloop;
+package com.redis.eventloop;
 
-import java.net.Socket;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 
 public class MultithreadedEventLoop implements IEventLoop {
@@ -13,6 +11,7 @@ public class MultithreadedEventLoop implements IEventLoop {
     }
     @Override
     public void start() {
+        System.out.println("Starting Event Loop ...");
         executorService.execute(eventLoop::start);
     }
     @Override
