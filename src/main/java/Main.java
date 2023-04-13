@@ -1,5 +1,3 @@
-package com.redis;
-
 import com.redis.eventloop.*;
 import com.redis.protocol.IRespProtocol;
 import com.redis.protocol.command.ICommand;
