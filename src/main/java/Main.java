@@ -5,20 +5,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.nio.channels.spi.SelectorProvider;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.net.ServerSocket;
-import java.net.Socket;
-
+import java.util.*;
 
 public class Main {
 
@@ -61,7 +49,7 @@ private static void handleRequest(SelectionKey selectionKey) throws IOException 
           client.close();
       } else {
           byteBuffer.flip();
-          ICommand command = IRespProtocol.decode(new ArrayList<>(List.of(new String(byteBuffer.array()).split("\r\n"))));
+          ICommand command = IRespProtocol.decode(new ArrayList<>(Arrays.asList(new String(byteBuffer.array()).split("\r\n"))));
           String response = command.generateResponse();
           System.out.println(new String(byteBuffer.array()));
           System.out.println(response);
