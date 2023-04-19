@@ -1,9 +1,16 @@
-import com.redis.eventloop.*;
 import com.redis.protocol.IRespProtocol;
 import com.redis.protocol.command.ICommand;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.*;
+import java.nio.channels.spi.SelectorProvider;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -14,40 +21,55 @@ import java.net.Socket;
 
 
 public class Main {
-  public static void main(String[] args) {
-    int eventLoopThreads = 1;
-    int workerThreads = 5;
-    BlockingQueue<AsyncConnectionHandler> concurrentTasks = new ArrayBlockingQueue<>(5);
-    EventLoop eventLoop = new EventLoop(concurrentTasks, new AtomicBoolean(true));
-    ExecutorService executorService = Executors.newFixedThreadPool(eventLoopThreads + workerThreads);
-    MultithreadedEventLoop multithreadedEventLoop = new MultithreadedEventLoop(executorService, eventLoop);
-    multithreadedEventLoop.start();
-    ServerSocket serverSocket = null;
-    Socket clientSocket = null;
-    int port = 6379;
-    try {
-      serverSocket = new ServerSocket(port);
-      serverSocket.setReuseAddress(true);
-      // Wait for connection from client.
+
+  private static final String POISON_PILL = "POISON_PILL";
+  public static void main(String[] args) throws IOException {
+      ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+      serverSocketChannel.socket().bind(new InetSocketAddress(6379));
+      serverSocketChannel.configureBlocking(false);
+      Selector selector = Selector.open();
+      serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
       while (true) {
-        clientSocket = serverSocket.accept();
-        concurrentTasks.put(new AsyncConnectionHandler(executorService, new ConnectionHandler(new Connection(clientSocket))));
+          selector.select();
+          Set<SelectionKey> selectionKeySet = selector.selectedKeys();
+          Iterator<SelectionKey> iterator = selectionKeySet.iterator();
+          while (iterator.hasNext()) {
+              SelectionKey selectionKey = iterator.next();
+              iterator.remove();
+              if (selectionKey.isAcceptable()) {
+                  handleNewConnection(selector, serverSocketChannel);
+              }
+              if (selectionKey.isReadable()) {
+                  handleRequest(selectionKey);
+              }
+          }
       }
-    } catch (IOException e) {
-      System.out.println("IOException: " + e.getMessage());
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } finally {
-      try {
-        if (serverSocket != null) {
-          serverSocket.close();
-        }
-      } catch (IOException e) {
-        System.out.println("IOException: " + e.getMessage());
+}
+
+private static void handleNewConnection(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
+      SocketChannel client = serverSocketChannel.accept();
+      System.out.println(client);
+      client.configureBlocking(false);
+      client.register(selector, SelectionKey.OP_READ);
+}
+
+private static void handleRequest(SelectionKey selectionKey) throws IOException {
+      ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+      SocketChannel client = (SocketChannel) selectionKey.channel();
+      int remainingByte = client.read(byteBuffer);
+      if (remainingByte == -1 || new String(byteBuffer.array()).trim().equals(POISON_PILL)) {
+          client.close();
+      } else {
+          byteBuffer.flip();
+          ICommand command = IRespProtocol.decode(new ArrayList<>(List.of(new String(byteBuffer.array()).split("\r\n"))));
+          String response = command.generateResponse();
+          System.out.println(new String(byteBuffer.array()));
+          System.out.println(response);
+          byteBuffer.clear();
+          client.write(ByteBuffer.wrap(response.getBytes(Charset.defaultCharset())));
       }
-    }
-  }
-  public static void main(String args) {
+}
+public static void main(String args) {
     ArrayList<String> incomingPingCommandValid = new ArrayList<>();
     ArrayList<String> incomingPingCommandWithArgument = new ArrayList<>();
     ArrayList<String> incomingPingCommandInvalid = new ArrayList<>();
