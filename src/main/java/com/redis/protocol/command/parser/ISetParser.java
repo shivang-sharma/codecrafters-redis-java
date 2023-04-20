@@ -1,8 +1,6 @@
 package com.redis.protocol.command.parser;
 
-import com.redis.protocol.command.EchoCommand;
 import com.redis.protocol.command.ICommand;
-import com.redis.protocol.command.PingCommand;
 import com.redis.protocol.command.SetCommand;
 
 import java.util.ArrayList;
@@ -17,6 +15,14 @@ public interface ISetParser {
     static ICommand decode(ArrayList<String> setRequest, int size) {
         if (size == 3) {
             return new SetCommand(setRequest.get(4), setRequest.get(6), null);
+        } else if (size == 5) {
+            if (setRequest.get(8).equalsIgnoreCase("EX")) {
+                return new SetCommand(setRequest.get(4), setRequest.get(6), "SECONDS", setRequest.get(10), null);
+            } else if (setRequest.get(8).equalsIgnoreCase("PX")) {
+                return new SetCommand(setRequest.get(4), setRequest.get(6), "MILLISECONDS", setRequest.get(10), null);
+            } else {
+                return new SetCommand(null, null, "ERR syntax error");
+            }
         } else if (size > 3) {
             return new SetCommand(null, null, "ERR syntax error");
         } else {

@@ -15,6 +15,11 @@ public class Store implements IStore {
     }
 
     @Override
+    public boolean set(String key, String value, String timeUnit, String expiryTime) {
+        return MapWrapper.set(key, value, timeUnit, expiryTime);
+    }
+
+    @Override
     public Optional<String> get(String key) {
         return MapWrapper.get(key);
     }
