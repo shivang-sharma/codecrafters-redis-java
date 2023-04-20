@@ -4,9 +4,15 @@ import com.redis.protocol.command.ICommand;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Set;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main {
 
@@ -36,7 +42,6 @@ public class Main {
 
 private static void handleNewConnection(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
       SocketChannel client = serverSocketChannel.accept();
-      System.out.println(client);
       client.configureBlocking(false);
       client.register(selector, SelectionKey.OP_READ);
 }
@@ -51,8 +56,6 @@ private static void handleRequest(SelectionKey selectionKey) throws IOException 
           byteBuffer.flip();
           ICommand command = IRespProtocol.decode(new ArrayList<>(Arrays.asList(new String(byteBuffer.array()).split("\r\n"))));
           String response = command.generateResponse();
-          System.out.println(new String(byteBuffer.array()));
-          System.out.println(response);
           byteBuffer.clear();
           client.write(ByteBuffer.wrap(response.getBytes(Charset.defaultCharset())));
       }

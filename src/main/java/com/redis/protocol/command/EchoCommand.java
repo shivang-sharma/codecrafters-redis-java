@@ -21,7 +21,6 @@ public class EchoCommand implements ICommand {
 
     @Override
     public String generateResponse() {
-        String DELIMITER = "\r\n";
         if (this.getMessage().isPresent()) {
             return "$"+this.getMessage().get().length() + DELIMITER + this.getMessage().get()+ DELIMITER;
         } else {

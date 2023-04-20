@@ -10,7 +10,7 @@ public interface IEchoParser {
         if (size == 2) {
             return new EchoCommand(echoRequest.get(4), null);
         } else {
-            return new EchoCommand(null, "ERR wrong number of arguments for 'echo' command..");
+            return new EchoCommand(null, "ERR wrong number of arguments for 'echo' command");
         }
     }
     static void encode() {

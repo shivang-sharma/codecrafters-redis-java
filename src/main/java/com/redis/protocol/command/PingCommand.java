@@ -22,7 +22,7 @@ public class PingCommand implements ICommand {
     @Override
     public String generateResponse() {
         if (this.getMessage().isPresent()) {
-            return "$"+this.getMessage().get().length() + DELIMETER + this.getMessage().get()+DELIMETER;
+            return "$"+this.getMessage().get().length() + DELIMETER + this.getMessage().get() + DELIMETER;
         } else if (this.getError().isPresent()) {
             return "-" + this.getError().get() + DELIMETER;
         } else {
