@@ -40,72 +40,35 @@ public class Main {
       }
 }
 
-private static void handleNewConnection(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
-      SocketChannel client = serverSocketChannel.accept();
-      client.configureBlocking(false);
-      client.register(selector, SelectionKey.OP_READ);
-}
-
-private static void handleRequest(SelectionKey selectionKey) throws IOException {
-      ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
-      SocketChannel client = (SocketChannel) selectionKey.channel();
-      int remainingByte = client.read(byteBuffer);
-      if (remainingByte == -1 || new String(byteBuffer.array()).trim().equals(POISON_PILL)) {
-          client.close();
-      } else {
-          byteBuffer.flip();
-          ICommand command = IRespProtocol.decode(new ArrayList<>(Arrays.asList(new String(byteBuffer.array()).split("\r\n"))));
-          String response = command.generateResponse();
-          byteBuffer.clear();
-          client.write(ByteBuffer.wrap(response.getBytes(Charset.defaultCharset())));
-      }
-}
-public static void main(String args) {
-    ArrayList<String> incomingPingCommandValid = new ArrayList<>();
-    ArrayList<String> incomingPingCommandWithArgument = new ArrayList<>();
-    ArrayList<String> incomingPingCommandInvalid = new ArrayList<>();
-    incomingPingCommandValid.add("*1");
-    incomingPingCommandValid.add("$4");
-    incomingPingCommandValid.add("PING");
-    // *2..$4..PING..$4..Test..
-    incomingPingCommandWithArgument.add("*2");
-    incomingPingCommandWithArgument.add("$4");
-    incomingPingCommandWithArgument.add("PING");
-    incomingPingCommandWithArgument.add("$4");
-    incomingPingCommandWithArgument.add("Test");
-    // *3..$4..PING..$4..Yay,..$1..1.
-    incomingPingCommandInvalid.add("*3");
-    incomingPingCommandInvalid.add("$4");
-    incomingPingCommandInvalid.add("PING");
-    incomingPingCommandInvalid.add("$3");
-    incomingPingCommandInvalid.add("Yay");
-    incomingPingCommandInvalid.add("$1");
-    incomingPingCommandInvalid.add("1");
-
-    ICommand validCommand = IRespProtocol.decode(incomingPingCommandValid);
-    ICommand validCommandWithArgument = IRespProtocol.decode(incomingPingCommandWithArgument);
-    ICommand invalidCommand = IRespProtocol.decode(incomingPingCommandInvalid);
-
-    if (validCommand.getMessage().isPresent()) {
-      System.out.println(validCommand.getMessage().get());
-    } else if (validCommand.getError().isPresent()) {
-      System.out.println("-" + validCommand.getError().get());
-    } else {
-      System.out.println("PONG");
+    /**
+     *
+     * @param selector
+     * @param serverSocketChannel
+     * @throws IOException
+     */
+    private static void handleNewConnection(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
+        SocketChannel client = serverSocketChannel.accept();
+        client.configureBlocking(false);
+        client.register(selector, SelectionKey.OP_READ);
     }
-    if (validCommandWithArgument.getMessage().isPresent()) {
-      System.out.println(validCommandWithArgument.getMessage().get());
-    } else if (validCommandWithArgument.getError().isPresent()) {
-      System.out.println("-" + validCommandWithArgument.getError().get());
-    } else {
-      System.out.println("PONG");
+
+    /**
+     *
+     * @param selectionKey
+     * @throws IOException
+     */
+    private static void handleRequest(SelectionKey selectionKey) throws IOException {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+        SocketChannel client = (SocketChannel) selectionKey.channel();
+        int remainingByte = client.read(byteBuffer);
+        if (remainingByte == -1 || new String(byteBuffer.array()).trim().equals(POISON_PILL)) {
+            client.close();
+        } else {
+            byteBuffer.flip();
+            ICommand command = IRespProtocol.decode(new ArrayList<>(Arrays.asList(new String(byteBuffer.array()).split("\r\n"))));
+            String response = command.generateResponse();
+            byteBuffer.clear();
+            client.write(ByteBuffer.wrap(response.getBytes(Charset.defaultCharset())));
+        }
     }
-    if (invalidCommand.getMessage().isPresent()) {
-      System.out.println(validCommand.getMessage().get());
-    } else if (invalidCommand.getError().isPresent()) {
-      System.out.println("-" + invalidCommand.getError().get());
-    } else {
-      System.out.println("PONG");
-    }
-  }
 }

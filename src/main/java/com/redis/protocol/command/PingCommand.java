@@ -6,6 +6,11 @@ public class PingCommand implements ICommand {
     private final String DELIMETER = "\r\n";
     public String message;
     public String error;
+
+    /**
+     * @param message
+     * @param error
+     */
     public PingCommand(String message, String error) {
         this.message = message;
         this.error = error;
@@ -15,10 +20,16 @@ public class PingCommand implements ICommand {
         return Optional.ofNullable(this.message);
     }
 
+    /**
+     * @return
+     */
     public Optional<String> getError() {
         return Optional.ofNullable(this.error);
     }
 
+    /**
+     * @return
+     */
     @Override
     public String generateResponse() {
         if (this.getMessage().isPresent()) {

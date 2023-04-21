@@ -11,11 +11,25 @@ public class SetCommand implements ICommand {
     private String expiryTime;
     private String message;
     private String error;
+
+    /**
+     * @param key
+     * @param value
+     * @param error
+     */
     public SetCommand(String key, String value, String error) {
         this.key = key;
         this.value = value;
         this.error = error;
     }
+
+    /**
+     * @param key
+     * @param value
+     * @param timeUnit
+     * @param expiryTime
+     * @param error
+     */
     public SetCommand(String key, String value, String timeUnit, String expiryTime, String error) {
         this.key = key;
         this.value = value;
@@ -23,11 +37,18 @@ public class SetCommand implements ICommand {
         this.expiryTime = expiryTime;
         this.error = error;
     }
+
+    /**
+     * @return
+     */
     @Override
     public Optional<String> getMessage() {
         return Optional.ofNullable(this.message);
     }
 
+    /**
+     * @return
+     */
     @Override
     public Optional<String> getError() {
         return Optional.ofNullable(this.error);

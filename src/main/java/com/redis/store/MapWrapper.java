@@ -8,6 +8,12 @@ import java.util.concurrent.TimeUnit;
 class MapWrapper {
     private static final ConcurrentHashMap<String, String> concurrentHashMap = new ConcurrentHashMap<>(50);
     private static final ConcurrentHashMap<String, String> concurrentExpiryHashMap = new ConcurrentHashMap<>(50);
+
+    /**
+     * @param key
+     * @param value
+     * @return
+     */
     public static boolean set(String key, String value) {
         try {
             concurrentHashMap.put(key, value);
@@ -17,6 +23,14 @@ class MapWrapper {
         }
         return true;
     }
+
+    /**
+     * @param key
+     * @param value
+     * @param timeUnit
+     * @param expiryTime
+     * @return
+     */
     public static boolean set(String key, String value, String timeUnit, String expiryTime) {
         try {
             concurrentHashMap.put(key, value);
@@ -33,6 +47,10 @@ class MapWrapper {
         return true;
     }
 
+    /**
+     * @param key
+     * @return
+     */
     public static Optional<String> get(String key) {
         if (concurrentExpiryHashMap.containsKey(key)) {
             long currentTime = Instant.now().toEpochMilli();

@@ -29,7 +29,4 @@ public interface ISetParser {
             return new SetCommand(null, null, "ERR wrong number of arguments for 'set' command");
         }
     }
-    static void encode() {
-        // TODO
-    }
 }

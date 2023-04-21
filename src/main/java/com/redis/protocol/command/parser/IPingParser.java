@@ -6,6 +6,11 @@ import com.redis.protocol.command.PingCommand;
 import java.util.ArrayList;
 
 public interface IPingParser {
+    /**
+     * @param pingRequest
+     * @param size
+     * @return
+     */
     static ICommand decode(ArrayList<String> pingRequest, int size) {
         if (size > 2) {
             return new PingCommand(null, "ERR wrong number of arguments for 'ping' command");
@@ -14,8 +19,5 @@ public interface IPingParser {
         } else {
             return new PingCommand(null, null);
         }
-    }
-    static void encode() {
-        // TODO
     }
 }

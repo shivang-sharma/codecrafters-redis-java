@@ -10,9 +10,18 @@ import com.redis.protocol.command.parser.ISetParser;
 import java.util.ArrayList;
 
 public interface IRespProtocol {
+    /**
+     * @param request
+     * @return
+     */
     static String encode(String[] request){
         return "";
     }
+
+    /**
+     * @param request
+     * @return
+     */
     static ICommand decode(ArrayList<String> request) {
         int size = Integer.parseInt(request.get(0).substring(1,2));
         if (request.get(2).equalsIgnoreCase("PING")) {

@@ -10,11 +10,18 @@ public class GetCommand implements ICommand{
     private String message;
     private String error;
 
+    /**
+     * @param key
+     * @param error
+     */
     public GetCommand(String key, String error) {
         this.key = key;
         this.error = error;
     }
 
+    /**
+     * @return
+     */
     @Override
     public Optional<String> getMessage() {
         return Optional.ofNullable(this.message);
@@ -23,11 +30,18 @@ public class GetCommand implements ICommand{
         Optional<String> value = Store.getInstance().get(this.key);
         this.message = value.orElse("");
     }
+
+    /**
+     * @return
+     */
     @Override
     public Optional<String> getError() {
         return Optional.ofNullable(this.error);
     }
 
+    /**
+     * @return
+     */
     @Override
     public String generateResponse() {
         if (this.getError().isPresent()) {

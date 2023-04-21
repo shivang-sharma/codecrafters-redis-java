@@ -20,7 +20,4 @@ public interface IGetParser {
             return new SetCommand(null, null, "ERR wrong number of arguments for 'get' command");
         }
     }
-    static void encode() {
-        // TODO
-    }
 }
