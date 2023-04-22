@@ -25,10 +25,10 @@ public class UnknownCommand implements ICommand{
 
     @Override
     public String generateResponse() {
-        error = error.formatted(this.command);
+        error = String.format(error, this.command);
         StringBuffer errorBuffer = new StringBuffer(error);
         for (String argument: args) {
-            errorBuffer.append(" '%s'".formatted(argument));
+            errorBuffer.append(String.format(" '%s'",argument));
         }
         error = errorBuffer.toString();
         return "-" + error + DELIMITER;
