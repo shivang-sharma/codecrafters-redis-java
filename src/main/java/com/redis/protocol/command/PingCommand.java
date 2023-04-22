@@ -3,7 +3,6 @@ package com.redis.protocol.command;
 import java.util.Optional;
 
 public class PingCommand implements ICommand {
-    private final String DELIMETER = "\r\n";
     public String message;
     public String error;
 
@@ -33,11 +32,11 @@ public class PingCommand implements ICommand {
     @Override
     public String generateResponse() {
         if (this.getMessage().isPresent()) {
-            return "$"+this.getMessage().get().length() + DELIMETER + this.getMessage().get() + DELIMETER;
+            return "$"+this.getMessage().get().length() + DELIMITER + this.getMessage().get() + DELIMITER;
         } else if (this.getError().isPresent()) {
-            return "-" + this.getError().get() + DELIMETER;
+            return "-" + this.getError().get() + DELIMITER;
         } else {
-            return "+PONG"+DELIMETER;
+            return "+PONG" + DELIMITER;
         }
     }
 }
